@@ -7,7 +7,7 @@ export const validationSchema = {
     }),
 
     query: t.Object({
-        includePayments: t.Optional(t.Boolean())
+        includePayments: t.Optional(t.Boolean({default: false}))
     }),
 
     response: {

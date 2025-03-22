@@ -5,7 +5,7 @@ export const validationSchema = {
 
     query: t.Object({
         clientId: t.Optional(t.String()),
-        status: t.Optional(t.Enum(PaymentQueryStatus))
+        status: t.Optional(t.Enum(PaymentQueryStatus, {default: PaymentQueryStatus.ALL}))
     }),
 
     response: {

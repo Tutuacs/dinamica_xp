@@ -1,7 +1,7 @@
 import Elysia from "elysia";
 import { validationSchema } from "./validation/list";
 
-export const ListClient = new Elysia({name: "ListClient"})
+export const ListClientController = new Elysia({name: "ClientByIdControler"})
     .get("/list", ({set}) => {
         set.status = 200;
         

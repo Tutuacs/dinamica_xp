@@ -6,6 +6,7 @@ export const validationSchema = {
             message: t.Literal("List all clients")
         })
     },
+
     detail: {
         name: "ListClient",
         method: "GET",

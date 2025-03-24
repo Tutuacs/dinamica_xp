@@ -1,1 +1,0 @@
-// TODO: Create default specific types for the clients objects

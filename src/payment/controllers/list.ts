@@ -3,7 +3,7 @@ import { validationSchema } from "./validation/list";
 import { PaymentQueryStatus } from "../types";
 
 export const ListPaymentController = new Elysia({name: "ListPaymentController", tags: ["Payment"]})
-    .get("/list/query", ({set, query}) => {
+    .get("/list", ({set, query}) => {
 
         const message = "List all payments based on query status && client";
 

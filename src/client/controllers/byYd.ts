@@ -3,7 +3,7 @@ import { validationSchema } from "./validation/byId";
 import { ClienteRepository } from "../repository/repository";
 
 export const ClientByIdControler = new Elysia({name: "ClientByIdControler"})
-    .get("/byId/:id/query", ({set, params: {id}, query}) => {
+    .get("/byId/:id", ({set, params: {id}, query}) => {
 
         const clienteRepository = new ClienteRepository();
 

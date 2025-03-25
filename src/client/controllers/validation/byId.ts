@@ -1,4 +1,5 @@
 import { t } from "elysia";
+import { client } from "../../types";
 
 export const validationSchema = {
 
@@ -7,20 +8,15 @@ export const validationSchema = {
     }),
 
     query: t.Object({
-        includePayments: t.Optional(t.Boolean({default: false}))
+        includePayments: t.Optional(t.Boolean({ default: false }))
     }),
 
     response: {
-        200: t.Union([
-            t.Object({
-                message: t.String()
-            }),
-            t.Object({
-                message: t.String()
-            })
-        ]),
+        200: t.Object({
+            client: client
+        }),
         404: t.Object({
-            message: t.Literal("Client not found")
+            message: t.String()
         })
     },
 

@@ -1,49 +1,76 @@
 import * as fs from 'fs';
 import { common } from '../../common/common';
-import { Cliente } from '../types';
+import { Client } from '../types';
 import { PaymentRepository } from '../../payment/repository/repository';
 
-export class ClienteRepository {
+export class ClientRepository {
     private filePath: string = "./1428624292050_clientes.txt";
-    private date: common = new common();
+    private paymentRepository: PaymentRepository;
+    private date: common;
 
-    constructor() {}
+    constructor() {
+        this.paymentRepository = new PaymentRepository();
+        this.date = new common();
+    }
 
-    public getClientes({includePayments, clientId}: {includePayments?: boolean, clientId?: number}): Cliente[] | Cliente {
+    public getClient(id: number, includePayments?: boolean): Client | null {
         const data = fs.readFileSync(this.filePath, 'utf-8');
         const file = data.split('\n');
         
-        const clients: Cliente[] = [];
+        for (const line of file) {
+            const [lineId, cpf, nascimento, telefone, nome] = line.split(';');
+
+            if (lineId && parseInt(lineId, 10) === id) {
+                const client: Client = {
+                    id: parseInt(lineId, 10),
+                    cpf: cpf || undefined,
+                    nascimento: this.date.transformDate(nascimento),
+                    telefone: telefone || undefined,
+                    nome: nome || 'Cliente Sauna ?'
+                };
+
+                if (includePayments) {
+                    const pendent = this.paymentRepository.getPendent(id);
+                    const payment = this.paymentRepository.getPayments({id});
+                    client.pendent = pendent? pendent : 0;
+                    client.payments = payment;
+                }
+
+                return client;
+            }
+        }
+
+        return null;
+    }
+
+    public getClients(includePayments?: boolean): Client[] {
+        const data = fs.readFileSync(this.filePath, 'utf-8');
+
+        const file = data.split('\n');
+        
+        const clients: Client[] = [];
 
         for (const line of file) {
             const [id, cpf, nascimento, telefone, nome] = line.split(';');
 
-            if (id && id !== id) {
+            if (!id || id == null) {
                 continue;
             }
 
+            const client: Client = {
+                id: parseInt(id, 10),
+                cpf: cpf || undefined,
+                nascimento: this.date.transformDate(nascimento),
+                telefone: telefone || undefined,
+                nome: nome || 'Cliente Sauna ?'
+            };
+
             if (includePayments) {
-
-                const paymentRepository = new PaymentRepository();
-                const payments = paymentRepository.getPayments({id: clientId});
-
-                return {
-                    id: parseInt(id, 10),
-                    cpf: cpf || null,
-                    nascimento: this.date.transformDate(nascimento),
-                    telefone: telefone || null,
-                    nome: nome?.trim() || '',
-                    payments: payments
-                };
+                const pendent = this.paymentRepository.getPendent(parseInt(id, 10));
+                client.pendent = pendent? pendent : 0;
             }
 
-            clients.push({
-                id: parseInt(id, 10),
-                cpf: cpf || null,
-                nascimento: this.date.transformDate(nascimento),
-                telefone: telefone || null,
-                nome: nome?.trim() || ''
-            });
+            clients.push(client);
         }
 
         return clients;

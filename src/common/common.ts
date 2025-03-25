@@ -2,9 +2,9 @@ export class common {
 
     constructor() {}
 
-    public transformDate(date: string): string | null {
-        if (date === 'NULL') {
-            return "";
+    public transformDate(date: string): string | undefined {
+        if (!date) {
+            return undefined;
         }
     
         if (date.length > 7) {

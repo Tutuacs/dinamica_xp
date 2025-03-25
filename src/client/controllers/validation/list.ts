@@ -1,9 +1,10 @@
 import { t } from "elysia";
+import { client } from "../../types";
 
 export const validationSchema = {
     response: {
         200: t.Object({
-            message: t.Literal("List all clients")
+            clients: t.Array(client)
         })
     },
 

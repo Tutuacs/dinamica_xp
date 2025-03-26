@@ -6,6 +6,10 @@ export class common {
         if (!date) {
             return undefined;
         }
+
+        if (date === '0') {
+            return date;
+        }
     
         if (date.length > 7) {
             return date.substring(0, 2) + '/' + date.substring(2, 4) + '/' + date.substring(4, 8);

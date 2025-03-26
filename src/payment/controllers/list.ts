@@ -1,30 +1,23 @@
 import Elysia from "elysia";
 import { validationSchema } from "./validation/list";
-import { PaymentQueryStatus } from "../types";
+import { PaymentRepository } from "../repository/repository";
 
 export const ListPaymentController = new Elysia({name: "ListPaymentController", tags: ["Payment"]})
-    .get("/list", ({set, query}) => {
+    .decorate("paymentRepository", new PaymentRepository())
+    .get("/list", ({set, query, paymentRepository}) => {
 
-        const message = "List all payments based on query status && client";
 
-        if (query.status) {
-            if (query.status === PaymentQueryStatus.PAID) {
-                console.log("FILTER BY PAID")
-            } else if (query.status === PaymentQueryStatus.PENDING) {
-                console.log("FILTER BY PENDING")
-            }
+        const consult = paymentRepository.getPayments({id: query.clientId, status: query.status});
 
-            if (!query.clientId) {
-                console.log("RETURN ALL PAYMENTS")
+        if (consult.length === 0) {
+            set.status = 404;
+            return {
+                message: "This client has no payments"
             }
         }
 
-        if (query.clientId) {
-            console.log("FILTER BY CLIENT ID")
-        }
-
-        set.status = 200;
         return {
-            message,
+            payments: consult,
         }
+
     }, validationSchema);

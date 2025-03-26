@@ -1,12 +1,15 @@
 import Elysia from "elysia";
 import { validationSchema } from "./validation/pendent";
+import { PaymentRepository } from "../repository/repository";
 
 export const PaymentPendentController = new Elysia({name: "PaymentPendentController"})
-    .get("/pendent/:clientId", ({set, params: {clientId}}) => {
+    .decorate("paymentRepository", new PaymentRepository())
+    .get("/pendent/:clientId", ({params: {clientId}, paymentRepository}) => {
 
-        set.status = 200;
+        const total = paymentRepository.getPendent(clientId);
+
         return {
-            total: 10,
+            total,
         }
 
     },validationSchema);

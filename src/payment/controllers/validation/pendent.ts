@@ -1,14 +1,15 @@
 import { t } from "elysia";
+import { client } from "../../../client/types";
 
 export const validationSchema = {
     params: t.Object({
-        clientId: t.String()
+        clientId: client.properties.id,
     }),
 
     response: {
         200: t.Object({
-            total: t.Number(),
-        })
+            total: t.Number({default: 0}),
+        }),
     },
 
     detail: {
@@ -17,4 +18,5 @@ export const validationSchema = {
         description: "List all pendent payments based on client and return the total",
         tags: ["Payment"],
     }
+
 }

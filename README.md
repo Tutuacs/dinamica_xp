@@ -46,4 +46,7 @@ To start the development server run:
 bun dev
 ```
 
-Open http://localhost:3000/swagger with your browser to see the openAPI options.
+# Swagger
+##### You can check the routes on swagger
+
+###### Open http://localhost:3000/swagger with your browser to see the openAPI options.

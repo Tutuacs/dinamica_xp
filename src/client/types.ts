@@ -7,16 +7,7 @@ const nascimento = t.Optional(t.String({description: "Client birthdate", minLeng
 const telefone = t.Optional(t.String({description: "Client phone number", minLength: 0, maxLength: 11}));
 const nome = t.String({description: "Client name", minLength: 9});
 const pendent = t.Optional(t.Number({description: "Client pendent", minimum: 0, default: 0}));
-
-// // Definição do tipo Cliente
-// export interface Cliente {
-//     id: number;
-//     cpf?: string | null;
-//     nascimento?: string| null;
-//     telefone?: string| null| null;
-//     nome: string;
-//     payments?: Payment[];
-// }
+const payd = t.Optional(t.Number({description: "Client payd", minimum: 0, default: 0}));
 
 export const client = t.Object({
     id: clientId,
@@ -25,7 +16,8 @@ export const client = t.Object({
     telefone: telefone,
     nome: nome,
     payments: t.Optional(t.Array(payment)),
-    pendent: pendent
+    pendent: pendent,
+    payd: payd,
 });
 
 export type Client = typeof client.static

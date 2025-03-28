@@ -11,15 +11,7 @@ const paymentDate = t.Optional(t.String({description: "Payment date", minLength:
 const unknow = t.Optional(t.String({description: "Unknow"}));
 const value = t.Number({minimum: 0, description: "Payment value"});
 const payd = t.Boolean({description: "Payment status"});
-
-// // Definição do tipo Payment
-// export interface Payment {
-//     clientId?: string | null;
-//     paymentDate?: string | null;
-//     unknow?: string | null;
-//     value: string;
-//     payd: boolean;
-// }
+const pending = t.Optional(t.Boolean({description: "Payment status"}));
 
 export const payment = t.Object({
     clientId: clientId,
@@ -29,4 +21,11 @@ export const payment = t.Object({
     payd: payd
 });
 
+export const paymentByDate = t.Object({
+    paymentDate: paymentDate,
+    value: value,
+    pending: pending,
+})
+
 export type Payment = typeof payment.static
+export type PaymentByDate = typeof paymentByDate.static

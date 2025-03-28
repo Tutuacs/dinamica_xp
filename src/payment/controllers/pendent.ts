@@ -1,15 +1,33 @@
 import Elysia from "elysia";
 import { validationSchema } from "./validation/pendent";
 import { PaymentRepository } from "../repository/repository";
+import { ClientRepository } from "../../client/repository/repository";
+import { Client } from "../../client/types";
 
 export const PaymentPendentController = new Elysia({name: "PaymentPendentController"})
     .decorate("paymentRepository", new PaymentRepository())
-    .get("/pendent/:clientId", ({params: {clientId}, paymentRepository}) => {
+    .decorate("clientRepository", new ClientRepository())
+    .get("/pendent", ({paymentRepository, clientRepository}) => {
 
-        const total = paymentRepository.getPendent(clientId);
+        const clients = clientRepository.getClients()
+
+        const clientsPending: Client[] = [];
+
+        for (const client of clients) {
+            const total = paymentRepository.getPendent(client.id);
+
+            if (total === 0 || !total) {
+                continue
+            }
+
+            client.pendent = total
+
+            clientsPending.push(client)
+        }
+
 
         return {
-            total,
+            clients: clientsPending
         }
 
     },validationSchema);

@@ -1,11 +1,12 @@
 import { t } from "elysia";
 import { client } from "../../../client/types";
+import { paymentByDate } from "../../types";
 
 export const validationSchema = {
 
     response: {
         200: t.Object({
-            clients: t.Array(client)
+            payments: t.Array(paymentByDate)
         }),
     },
 

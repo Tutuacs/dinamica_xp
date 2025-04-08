@@ -19,7 +19,7 @@ export class PaymentRepository {
         for (const line of file) {
             const [clientId, paymentDate, unknow, value, payd] = line.split(';');
 
-            if (id != null && parseInt(clientId, 10) !== id) {
+            if (clientId.length == 0 || id != -1 && parseInt(clientId, 10) !== id) {
                 continue;
             }
 

@@ -6,7 +6,6 @@ export const ListPaymentController = new Elysia({name: "ListPaymentController", 
     .decorate("paymentRepository", new PaymentRepository())
     .get("/list", ({set, query, paymentRepository}) => {
 
-
         const consult = paymentRepository.getPayments({id: query.clientId, status: query.status});
 
         if (consult.length === 0) {

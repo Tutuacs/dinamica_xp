@@ -6,12 +6,12 @@ export enum PaymentQueryStatus {
     PENDING = "pending",
 }
 
-const clientId = t.Number({minimum: 0, description: "Client ID"});
-const paymentDate = t.Optional(t.String({description: "Payment date", minLength: 7, maxLength: 10}));
-const unknow = t.Optional(t.String({description: "Unknow"}));
-const value = t.Number({minimum: 0, description: "Payment value"});
-const payd = t.Boolean({description: "Payment status"});
-const pending = t.Optional(t.Boolean({description: "Payment status"}));
+const clientId = t.Number({ minimum: 0, description: "Client ID" });
+const paymentDate = t.Optional(t.String({ description: "Payment date", minLength: 7, maxLength: 10 }));
+const unknow = t.Optional(t.String({ description: "Unknow" }));
+const value = t.Number({ minimum: 0, description: "Payment value" });
+const payd = t.Boolean({ description: "Payment status" });
+const pending = t.Optional(t.Boolean({ description: "Payment status" }));
 
 export const payment = t.Object({
     clientId: clientId,

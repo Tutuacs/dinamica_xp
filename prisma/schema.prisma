@@ -10,21 +10,21 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Client {
-  id         Int     @id @default(autoincrement())
+model client {
+  id         Int       @id @default(autoincrement())
   cpf        String?
   nascimento DateTime?
   telefone   String?
   nome       String?
   pendent    Float?
   payd       Float?
-  Payment Payment[]
+  Payment    payment[]
 }
 
-model Payment {
-  id          Int      @id @default(autoincrement())
+model payment {
+  id          Int       @id @default(autoincrement())
   clientId    Int
-  client      Client   @relation(fields: [clientId], references: [id])
+  client      client    @relation(fields: [clientId], references: [id])
   paymentDate DateTime?
   unknow      String?
   value       Float

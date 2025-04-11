@@ -3,18 +3,20 @@ import { validationSchema } from "./validation/payd";
 import { PaymentRepository } from "../repository/repository";
 import { ClientRepository } from "../../client/repository/repository";
 import { Client } from "../../client/types";
+import { PaymentDb } from "../repository/dbRepository";
+import { ClientDb } from "../../client/repository/dbRepository";
 
 export const PaymentPaydController = new Elysia({name: "PaymentPaydController"})
-    .decorate("paymentRepository", new PaymentRepository())
-    .decorate("clientRepository", new ClientRepository())
-    .get("/payd", ({paymentRepository, clientRepository}) => {
+    .decorate("paymentRepository", new PaymentDb())
+    .decorate("clientRepository", new ClientDb())
+    .get("/payd", async({paymentRepository, clientRepository}) => {
 
-        const clients = clientRepository.getClients()
+        const clients = await clientRepository.getClients()
 
         const clientsPayd: Client[] = [];
 
         for (const client of clients) {
-            const total = paymentRepository.getPaydt(client.id);
+            const total = await paymentRepository.getPaydt(client.id);
 
             if (!total) {
                 client.payd = 0

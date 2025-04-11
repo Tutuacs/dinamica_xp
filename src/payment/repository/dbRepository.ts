@@ -22,7 +22,7 @@ export class PaymentDb {
     public async getPayments({ id, status }: { id?: number, status?: PaymentQueryStatus }): Promise<Payment[]> {
         const whereClause: any = {};
 
-        if (id !== undefined) whereClause.clientId = id;
+        if (id !== undefined && id != -1) whereClause.clientId = id;
 
         if (status === PaymentQueryStatus.PAID) {
             whereClause.payd = true;
@@ -66,30 +66,79 @@ export class PaymentDb {
     }
 
     public async getByDate(): Promise<PaymentByDate[]> {
-        const result = await this.db.payment.groupBy({
-            by: ['paymentDate'],
+        // Get pending payments (payd = false)
+        const pendingPayments = await this.db.payment.groupBy({
+            by: ['paymentDate', "payd"],
             _sum: {
-                value: true
-            },
-            _count: {
-                _all: true
+                value: true,
             },
             where: {
-                paymentDate: {
-                    not: null
-                }
+                paymentDate: { not: null },
+                payd: false,
             },
             orderBy: {
-                paymentDate: 'asc'
+                paymentDate: 'desc'
             }
         });
-
-        // distinct? 
-        return result.map(r => ({
-            paymentDate: r.paymentDate?.toISOString(),
-            value: r._sum.value ?? 0,
-            pending: undefined
-        }));
+    
+        // Get paid payments (payd = true)
+        const paidPayments = await this.db.payment.groupBy({
+            by: ['paymentDate', "payd"],
+            _sum: {
+                value: true,
+            },
+            where: {
+                paymentDate: { not: null },
+                payd: true,
+            },
+            orderBy: {
+                paymentDate: 'desc'
+            }
+        });
+    
+        // Combine both sets
+        const allPayments = [...pendingPayments, ...paidPayments];
+        
+        const result: PaymentByDate[] = [];
+        const formatDate = (date: Date) => {
+            if (!date) return '';
+            const day = date.getDate();
+            const month = date.getMonth() + 1;
+            const year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        };
+    
+        for (const p of allPayments) {
+            const value = p._sum.value ?? 0;
+            const date = p.paymentDate ? formatDate(p.paymentDate) : '';
+            
+            // Find if we already have an entry for this exact date and payment status
+            const existingIndex = result.findIndex(item => 
+                item.paymentDate && 
+                formatDate(new Date(item.paymentDate)) === date && 
+                item.pending === !p.payd
+            );
+    
+            if (existingIndex !== -1) {
+                // If found, sum the values
+                result[existingIndex].value += value;
+            } else {
+                // Otherwise create a new entry
+                result.push({
+                    paymentDate: p.paymentDate ? new Date(p.paymentDate).toISOString() : undefined,
+                    value,
+                    pending: !p.payd // Convert payd to pending status
+                });
+            }
+        }
+    
+        // Sort the final result by paymentDate in descending order
+        result.sort((a, b) => {
+            if (!a.paymentDate || !b.paymentDate) return 0;
+            return new Date(b.paymentDate).getTime() - new Date(a.paymentDate).getTime();
+        });
+    
+        return result;    
     }
 
 }

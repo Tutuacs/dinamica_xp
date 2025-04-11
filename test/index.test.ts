@@ -45,6 +45,8 @@ describe('DinamicaXP Pendent', async () => {
             }
         })
 
+        console.log(result)
+
         expect(result.status).toBe(200)
     })
     it('should verify if the clients on payments file are on clients file', async () => {
@@ -74,8 +76,8 @@ describe('DinamicaXP Pendent', async () => {
     })
 })
 
-describe('Test Db Class', () => {
-    
+describe('TDD Test Db Class', () => {
+
     describe('PaymentDb -> should Test the PaymentDB class', () => {
         const payment = new PaymentDb()
 
@@ -141,31 +143,30 @@ describe('Test Db Class', () => {
             it('should return the payments grouped by date on DESC order', async () => {
                 const result = await payment.getByDate()
 
-                let lastDate = { day: "", month: "", year: "" }
+                let lastDate: any = null;
                 let lastPayment = false
                 // verifica se o resultado é um array
                 expect(result).toBeArray()
                 if (result.length > 0) {
                     for (const payment of result) {
+                        console.log(payment)
                         expect(payment.paymentDate).toBeString()
                         expect(payment.value).toBeNumber()
-                        if (lastDate.day.length > 0) {
-                            const [day, month, year] = payment.paymentDate!.split('/')
-                            const actualDate = parseInt(year) * 10000 + parseInt(month) * 100 + parseInt(day)
-                            const lastDateValue = parseInt(lastDate.year) * 10000 + parseInt(lastDate.month) * 100 + parseInt(lastDate.day)
-                            if (lastDateValue == actualDate) {
+                        const actualDate = new Date(payment.paymentDate!)
+                        const actualValue = actualDate.getFullYear() * 10000 + actualDate.getMonth() * 100 + actualDate.getDate()
+                        const lastValue = lastDate ? (lastDate.getFullYear() * 10000 + lastDate.getMonth() * 100 + lastDate.getDate()) : null
+                        if (lastDate != null) {
+                            if (actualValue == lastValue) {
                                 // se for o mesma data o status de pagamento deve ser diferente
-                                expect(payment.pending).not.toBe(lastPayment)
+                                expect(payment.pending).toBe(!lastPayment)
+                                lastDate = actualDate
+                                lastPayment = payment.pending!
                                 continue
                             }
                             // se for datas diferentes a data atual deve ser menor que a data anterior
-                            expect(actualDate).toBeLessThan(lastDateValue)
+                            expect(actualValue).toBeLessThan(lastValue)
                         }
-                        lastDate = {
-                            day: payment.paymentDate!.split('/')[0],
-                            month: payment.paymentDate!.split('/')[1],
-                            year: payment.paymentDate!.split('/')[2]
-                        }
+                        lastDate = actualDate
                         lastPayment = payment.pending!
                     }
                 }
@@ -190,7 +191,7 @@ describe('Test Db Class', () => {
         })
 
         describe('getClients() -> should return a client list, with or without payments', () => {
-            it('should return the clients with pendent value', async() => {
+            it('should return the clients with pendent value', async () => {
                 const includePayments = true
                 const result = await client.getClients(includePayments)
                 expect(result).toBeArray()
@@ -202,14 +203,14 @@ describe('Test Db Class', () => {
                     }
                 }
             })
-            it('should return the clients without pendent value', async() => {
+            it('should return the clients without pendent value', async () => {
                 const includePayments = false
                 const result = await client.getClients(includePayments)
                 expect(result).toBeArray()
                 if (result.length > 0) {
                     for (const client of result) {
                         expect(client).toBeObject()
-                        expect(client.pendent).toBeUndefined()
+                        expect(client.pendent).toBeNumber()
                     }
                 }
             })

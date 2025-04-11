@@ -7,7 +7,7 @@ export enum PaymentQueryStatus {
 }
 
 const clientId = t.Number({ minimum: 0, description: "Client ID" });
-const paymentDate = t.Optional(t.String({ description: "Payment date", minLength: 7, maxLength: 10 }));
+const paymentDate = t.Optional(t.String({ description: "Payment date", format: "date-time" }));
 const unknow = t.Optional(t.String({ description: "Unknow" }));
 const value = t.Number({ minimum: 0, description: "Payment value" });
 const payd = t.Boolean({ description: "Payment status" });
